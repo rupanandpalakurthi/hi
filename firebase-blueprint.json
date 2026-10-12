@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile for authenticated caregivers and family members",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["caregiver", "elderly"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Patient": {
+      "title": "Patient",
+      "description": "Elderly patient profile monitored by caregiver",
+      "type": "object",
+      "properties": {
+        "caregiverUid": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "age": { "type": "number" },
+        "relation": { "type": "string" },
+        "phone": { "type": "string" },
+        "city": { "type": "string" },
+        "pairingCode": { "type": "string", "maxLength": 6 },
+        "isPaired": { "type": "boolean" },
+        "pairedDeviceName": { "type": "string" },
+        "preferredLanguage": { "type": "string", "enum": ["en", "hi", "te"] },
+        "fontSize": { "type": "string", "enum": ["normal", "large", "xl"] },
+        "highContrast": { "type": "boolean" },
+        "voiceReadAloud": { "type": "boolean" }
+      },
+      "required": ["caregiverUid", "name", "pairingCode"]
+    },
+    "Medicine": {
+      "title": "Medicine",
+      "description": "Prescribed medicine details for a patient",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "caregiverUid": { "type": "string" },
+        "name": { "type": "string", "maxLength": 120 },
+        "dosage": { "type": "string", "maxLength": 50 },
+        "dosageForm": { "type": "string" },
+        "foodInstruction": { "type": "string" },
+        "scheduleTimes": { "type": "array" },
+        "stockQuantity": { "type": "number" },
+        "refillThreshold": { "type": "number" },
+        "active": { "type": "boolean" },
+        "colorTag": { "type": "string" }
+      },
+      "required": ["patientId", "caregiverUid", "name", "dosage"]
+    },
+    "ScheduledDose": {
+      "title": "ScheduledDose",
+      "description": "Instance of a scheduled dose for adherence tracking",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "caregiverUid": { "type": "string" },
+        "medicineId": { "type": "string" },
+        "medicineName": { "type": "string" },
+        "scheduledDate": { "type": "string" },
+        "scheduledTime": { "type": "string" },
+        "status": { "type": "string" },
+        "confirmedAt": { "type": "string" },
+        "confirmedMethod": { "type": "string" }
+      },
+      "required": ["patientId", "caregiverUid", "medicineId", "medicineName", "scheduledDate", "scheduledTime", "status"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Family communication message between caregiver and elderly",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "caregiverUid": { "type": "string" },
+        "sender": { "type": "string", "enum": ["caregiver", "elderly", "system"] },
+        "senderName": { "type": "string" },
+        "text": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["patientId", "sender", "text"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Caregiver user profile documents"
+    },
+    "/patients/{patientId}": {
+      "schema": "Patient",
+      "description": "Elderly patient profiles"
+    },
+    "/medicines/{medicineId}": {
+      "schema": "Medicine",
+      "description": "Prescribed medicine records"
+    },
+    "/scheduled_doses/{doseId}": {
+      "schema": "ScheduledDose",
+      "description": "Dose instances and adherence logs"
+    },
+    "/chat_messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Family chat history"
+    },
+    "/test/{docId}": {
+      "schema": "UserProfile",
+      "description": "Firestore connection health probe"
+    }
+  }
+}
